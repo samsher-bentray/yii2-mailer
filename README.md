@@ -63,7 +63,7 @@ public function actionCreate()
 
                  * If we want to use PHP mail ,we can call only the function "Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
                  * If we want to use Smtp mail or other type, we can call the function "Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
-                 * only after the setting six setting for and running Yii::$app->email->configSet();
+                 * only after the six setting for and running Yii::$app->email->configSet();
 
                  */
                 Yii::$app->email->setMailType('smtp');
@@ -86,7 +86,7 @@ public function actionCreate()
 
                 /*Function for email setting 
 
-                * note that email setting is completed only when execute function "Yii::$app->email->configure();"
+                * note that email setting is completed only when execute function "Yii::$app->email->configSet();"
 
                 * Otherwise email setting is not completed
 
