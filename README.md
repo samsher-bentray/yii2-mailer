@@ -44,7 +44,113 @@ return [
 Usage
 -----
 
-Once the extension is installed, simply use it in your code by  :
+Once the extension is installed, simply use it in your code by using these codes as following way in the controller:
 
 ```php
-<?= \samsher\mailer\AutoloadExample::widget(); ?>```
+public function actionCreate()
+
+    {
+
+        $model = new Email();
+
+
+
+        if ($model->load(Yii::$app->request->post())) {
+            
+                /*Passing arguement for mail type. 
+
+                 * It is important that default mail type is PHP mail
+
+                 * If we want to use PHP mail ,we can call only the function "Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
+                 * If we want to use Smtp mail or other type, we can call the function "Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
+                 * only after the setting six setting for and running Yii::$app->email->configSet();
+
+                 */
+                Yii::$app->email->setMailType('smtp');
+
+                //Passing arguement for Host setting
+                Yii::$app->email->setHost('smtp.gmail.com');
+
+                //Passing arguement for Username setting
+                Yii::$app->email->setUname('samsher@bentraytech.com');
+
+                //Passing arguement for Password setting
+                Yii::$app->email->setPassd('bentray123');
+
+                //Passing arguement for Encryption Type setting
+                Yii::$app->email->setEncType('ssl');
+
+                
+                //Passing arguement for Port setting
+                Yii::$app->email->setSMTPPort('465');
+
+                /*Function for email setting 
+
+                * note that email setting is completed only when execute function "Yii::$app->email->configure();"
+
+                * Otherwise email setting is not completed
+
+                */ 
+
+                Yii::$app->email->configSet();
+
+                /* Syntax Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);
+
+                 * Preparing the the arguements for Yii::$app->email->SendEmail();
+
+                 * $from = 'samsher@bentraytech.com';
+
+                 * $to = $model->to;
+
+                 * $subject = $model->subject;
+
+                 * $message_body = $model->message;
+
+                 * $cc = $model->cc;
+
+                 * $bcc = $model->bcc;
+
+                 * $attachment = UploadedFile::getInstances($model,'attachment');
+
+                 */
+
+                $from = 'samsher@bentraytech.com';
+
+                $to = $model->to;
+
+                $subject = $model->subject;
+
+                $message_body = $model->text_body;
+
+                $cc = $model->cc;
+
+                $bcc = $model->bcc;
+
+                /*Assigning the files for attachments*/
+
+                $attachment = UploadedFile::getInstances($model,'attachment');
+
+                
+                if (Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment)){
+                    return $this->redirect(['create']);
+                }
+                else {
+                    Yii::$app->session->setFlash('danger','Email send not success.'); //for for wrong event.
+                    return $this->redirect(['create']);
+                }
+        }
+
+        else{
+
+    
+
+            return $this->render('create', [
+
+                'model' => $model,
+
+            ]);
+
+        }
+
+    }
+```
