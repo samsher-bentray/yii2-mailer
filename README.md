@@ -72,7 +72,7 @@ public function actionCreate()
                 Yii::$app->email->setHost('smtp.gmail.com');
 
                 //Passing arguement for Username setting
-                Yii::$app->email->setUname('samsher@bentraytech.com');
+                Yii::$app->email->setUname('some email');
 
                 //Passing arguement for Password setting
                 Yii::$app->email->setPassd('bentray123');
@@ -98,7 +98,7 @@ public function actionCreate()
 
                  * Preparing the the arguements for Yii::$app->email->SendEmail();
 
-                 * $from = 'samsher@bentraytech.com';
+                 * $from = 'some email';
 
                  * $to = $model->to;
 
@@ -114,7 +114,7 @@ public function actionCreate()
 
                  */
 
-                $from = 'samsher@bentraytech.com';
+                $from = 'some email';
 
                 $to = $model->to;
 
