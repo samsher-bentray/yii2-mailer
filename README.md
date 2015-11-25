@@ -154,3 +154,9 @@ public function actionCreate()
 
     }
 ```
+Important Note:
+---------------
+```
+It is important that you must make a directory of name of "emailAttach" to the path location of this "Yii::$app->basePath.'/web"
+
+```
