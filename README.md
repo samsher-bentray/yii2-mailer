@@ -75,7 +75,7 @@ public function actionCreate()
                 Yii::$app->email->setUname('some email');
 
                 //Passing arguement for Password setting
-                Yii::$app->email->setPassd('bentray123');
+                Yii::$app->email->setPassd('some password');
 
                 //Passing arguement for Encryption Type setting
                 Yii::$app->email->setEncType('ssl');
