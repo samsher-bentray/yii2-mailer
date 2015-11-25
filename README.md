@@ -132,6 +132,7 @@ public function actionCreate()
 
                 
                 if (Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment)){
+                    Yii::$app->session->setFlash('success','Email sent.'); //for for wrong event.
                     return $this->redirect(['create']);
                 }
                 else {
