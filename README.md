@@ -1,6 +1,6 @@
 Mailer
 ======
-PHP and SMTP Mailer
+PHP and SMTP Mailer 
 
 Installation
 ------------
