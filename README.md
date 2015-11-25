@@ -1,6 +1,6 @@
 Mailer
 ======
-PHP and SMTP Mailer with dynamic configuration
+PHP and SMTP Mailer in Yii2 with dynamic configuration
 
 Installation
 ------------
