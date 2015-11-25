@@ -57,15 +57,8 @@ public function actionCreate()
 
         if ($model->load(Yii::$app->request->post())) {
             
-                /*Passing arguement for mail type. 
+                /*Starting configuration for smtp or other type*/
 
-                 * It is important that default mail type is PHP mail
-
-                 * If we want to use PHP mail ,we can call only the function "Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
-                 * If we want to use Smtp mail or other type, we can call the function "Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
-                 * only after the six setting for and running Yii::$app->email->configSet();
-
-                 */
                 Yii::$app->email->setMailType('smtp');
 
                 //Passing arguement for Host setting
@@ -84,35 +77,11 @@ public function actionCreate()
                 //Passing arguement for Port setting
                 Yii::$app->email->setSMTPPort('465');
 
-                /*Function for email setting 
+                /*Ending configuration for smtp or other type*/
 
-                * note that email setting is completed only when execute function "Yii::$app->email->configSet();"
+                 
+                Yii::$app->email->configSet();//note that email setting is completed only when execute this function
 
-                * Otherwise email setting is not completed
-
-                */ 
-
-                Yii::$app->email->configSet();
-
-                /* Syntax Yii::$app->email->SendEmail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);
-
-                 * Preparing the the arguements for Yii::$app->email->SendEmail();
-
-                 * $from = 'some email';
-
-                 * $to = $model->to;
-
-                 * $subject = $model->subject;
-
-                 * $message_body = $model->message;
-
-                 * $cc = $model->cc;
-
-                 * $bcc = $model->bcc;
-
-                 * $attachment = UploadedFile::getInstances($model,'attachment');
-
-                 */
 
                 $from = 'some email';
 
@@ -130,8 +99,15 @@ public function actionCreate()
 
                 $attachment = UploadedFile::getInstances($model,'attachment');
 
-                
-                if (Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment)){
+                // Syntax Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);
+                // It is important that default mail type is PHP mail
+                // If we want to use PHP mail ,we can call only the function 
+                // "Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
+                // If we want to use Smtp mail or other type, we can call the function
+                // "Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);"
+                // only after the six setting for and running Yii::$app->email->configSet();
+
+               if (Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment)){
                     Yii::$app->session->setFlash('success','Email sent.'); //for for wrong event.
                     return $this->redirect(['create']);
                 }
