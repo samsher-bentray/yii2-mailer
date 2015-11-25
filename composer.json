@@ -1,0 +1,21 @@
+{
+    "name": "samsher-bentray/yii2-mailer",
+    "description": "PHP and SMTP Mailer",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"],
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Samsher Bahadur Rana",
+            "email": "samsher@bentraytech.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "samsher\\mailer\\": ""
+        }
+    }
+}
