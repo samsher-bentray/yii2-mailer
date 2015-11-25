@@ -21,6 +21,25 @@ or add
 
 to the require section of your `composer.json` file.
 
+Configuration
+-------------
+
+Once the extension is installed, add following code to your application configuration :
+
+```php
+return [
+    //....
+    'components' => [
+
+            ...
+
+            'email' => 'samsher\mailer\Mail',
+            
+            ...
+
+    ],
+];
+```
 
 Usage
 -----
