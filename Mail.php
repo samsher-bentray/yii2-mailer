@@ -169,12 +169,7 @@ class Mail extends Mailer{
         $attach=[];
         if($actualFile)
         {
-            $attLocation = Yii::$app->basePath.'/web/emailAttach/';
-            foreach ($actualFile as $file)
-                {
-                    $file->saveAs($attLocation.$file->name);
-                    $attach[] = $attLocation.$file->name;
-                }
+            $attach = $this->SaveAttach($actualFile);
 
         }
         if($this->_Mail_Type=="PHPMAIL")
@@ -248,6 +243,17 @@ class Mail extends Mailer{
                 @unlink($attLocation.$file->name);
             }
         }              
+    }
+    public function SaveAttach($actualFile){
+        /*Initializing empty array for store atttachment file location with attachment name*/
+        $attach=[];
+        $attLocation = Yii::$app->basePath.'/web/emailAttach/';
+        foreach ($actualFile as $file)
+            {
+                $file->saveAs($attLocation.$file->name);
+                $attach[] = $attLocation.$file->name;
+            }
+            return $attach;
     }
   
 }
