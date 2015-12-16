@@ -289,8 +289,9 @@ class Mail extends Mailer{
         $loc_count=0;
         foreach ($actualFile as $file)
             {
-                $file->saveAs($attLocation.$file->name);
-                $attach .= $loc_count>0?','.$attLocation.$file->name:$attLocation.$file->name;
+                $attLocation = $attLocation.rand().$file->name;
+                $file->saveAs($attLocation);
+                $attach .= $loc_count>0?','.$attLocation:$attLocation;
                 $loc_count++;
             }
             
