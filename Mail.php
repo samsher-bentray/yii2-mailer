@@ -49,7 +49,11 @@ class Mail extends Mailer{
      * @var string the port.
      */
     public $port_num=NULL;
-
+    
+    /**
+     * @var string the SMTP server address.
+     */
+    public $attachments=NULL;
     
 
 
@@ -161,16 +165,26 @@ class Mail extends Mailer{
      * <li><b>$cc</b> contains a string of multiple email address with comma separated format or null value.</li>
      * <li><b>$bcc</b> contains a string of multiple email address with comma separated format or null value.</li>
      * <li><b>$actualFile</b> must be as array of UploadedFile objects with <b>multiple file upload</b>.</li>
+     * <li><b>For attachment</b>you can save attachments manually by sending UploadedFile objects to SaveAttach function.</li>
+     * <li>Then You can call SendMail function with comma separated value with attachment locations.</li>
      */ 
     public function SendMail($from, $to,$subject,$message_body,$cc=null,$bcc=null,$actualFile=null)
     {
         
-       /*Initializing empty array for store atttachment file location with attachment name*/
-        $attach=[];
-        if($actualFile)
-        {
-            $attach = $this->SaveAttach($actualFile);
+       
+        if(is_array ($actualFile )){
+           
+                if($actualFile)
+                {
+                    $attach_in_str = $this->SaveAttach($actualFile);
+                    $attach = explode(',', $attach_in_str);
 
+                }
+        }
+        elseif ($actualFile!=NULL) {
+            
+               $attach = explode(',', $actualFile);
+              
         }
         if($this->_Mail_Type=="PHPMAIL")
         {
@@ -212,7 +226,17 @@ class Mail extends Mailer{
             $headers .= "--".$boundary."--";//boundary closing 
 
             // send mail
-            return mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
+            $send =  mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
+            if($send){
+                /*deleting attachments*/ 
+                $this->DeleteAttach($attach);
+                return $send;
+                
+            }
+            else{
+                return $send;
+                
+            }
         
         }
         else //If $this->_Mail_Type=="SMTP" or other type, use SMTP settings
@@ -232,28 +256,67 @@ class Mail extends Mailer{
                 }
             }  
             $send->send();
-            if($send){ return true;}else{ return false;}
-        }
-                          
-       /*deleting attachments*/             
-        if($actualFile)
-        {
-            foreach ($actualFile as $file)
-            {
-                @unlink($attLocation.$file->name);
+            
+            if($send){
+                /*deleting attachments*/ 
+                $this->DeleteAttach($attach);
+                return true;
+                
             }
-        }              
+            else{
+                return false;
+                
+            }
+        }
+           
+        
+       
+                    
     }
+    
+    /**
+     * Returns a string which is a comma separated value of location of attachment files.
+     * <li></li>
+     * <li><b>Syntax:</b></li>
+     * <li>SaveAttach($actualFile)</li>
+     * <li></li>
+     * <li><b>$actualFile</b>Arguement must be UploadedFile objects</li>
+     */ 
     public function SaveAttach($actualFile){
         /*Initializing empty array for store atttachment file location with attachment name*/
-        $attach=[];
+        $attach='';
         $attLocation = Yii::$app->basePath.'/web/emailAttach/';
+        $loc_count=0;
         foreach ($actualFile as $file)
             {
                 $file->saveAs($attLocation.$file->name);
-                $attach[] = $attLocation.$file->name;
+                $attach .= $loc_count>0?','.$attLocation.$file->name:$attLocation.$file->name;
+                $loc_count++;
             }
+            
             return $attach;
+    }
+    /**
+     * Returns a boolean.
+     * <li></li>
+     * <li><b>Syntax:</b></li>
+     * <li>DeleteAttach($attach)</li>
+     * <li></li>
+     * <li><b>$attach</b>Arguement must be an array of attachment location</li>
+     */ 
+    public function DeleteAttach($attach){
+        
+        if(is_array ($attach ))
+        {
+           
+           
+            foreach ($attach as $file)
+            {
+                
+                @unlink($file);
+            }
+        }
+        return TRUE;
     }
   
 }
