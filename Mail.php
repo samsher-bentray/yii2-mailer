@@ -289,14 +289,14 @@ class Mail extends Mailer{
      */ 
     public function SaveAttach($actualFile){
         /*Initializing empty array for store atttachment file location with attachment name*/
-        $attach='';
+        $attach=[];
         $attLocation = Yii::$app->basePath.'/web/emailAttach/';
         $loc_count=0;
         foreach ($actualFile as $file)
             {
                 $attLocation = $attLocation.rand().$file->name;
                 $file->saveAs($attLocation);
-                $attach .= $loc_count>0?','.$attLocation:$attLocation;
+                $attach []= $attLocation;
                 $loc_count++;
             }
             
@@ -314,7 +314,6 @@ class Mail extends Mailer{
         
         if(is_array ($attach ))
         {
-           
            
             foreach ($attach as $file)
             {

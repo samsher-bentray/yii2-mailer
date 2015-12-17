@@ -98,6 +98,8 @@ public function actionCreate()
                 /*Assigning the files for attachments*/
 
                 $attachment = UploadedFile::getInstances($model,'attachment');
+				
+				Yii::$app->email->SaveAttach($attachment);
 
                 // Syntax Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment);
                 // It is important that default mail type is PHP mail
@@ -108,6 +110,8 @@ public function actionCreate()
                 // only after the six setting for and running Yii::$app->email->configSet();
 
                if (Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment)){
+					//deleting the attachment
+					Yii::$app->email->DeleteAttach($mail_store->attachments);
                     Yii::$app->session->setFlash('success','Email sent.'); //for for wrong event.
                     return $this->redirect(['create']);
                 }
