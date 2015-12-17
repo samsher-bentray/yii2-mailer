@@ -205,20 +205,22 @@ class Mail extends Mailer{
             $headers .= "Content-type:text/html; charset=iso-8859-1\r\n";
             $headers .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
             $headers .= $message_body."\r\n\r\n";
+            
+            if(isset($attach)){
+                //preparing attachments
+                foreach ($attach as $att_location){
+                    // read file into $data var
+                    $headers .= "--".$boundary."\r\n";//boundary for separating multiple attachments
+                    $file = fopen($att_location, "rb");
+                    $data = fread($file,  filesize( $att_location ) );
+                    fclose($file);
+                    $content = chunk_split(base64_encode($data));
+                    $headers .= "Content-Type: application/octet-stream; name=\"".basename($att_location)."\"\r\n";
+                    $headers .= "Content-Transfer-Encoding: base64\r\n";
+                    $headers .= "Content-Disposition: attachment; filename=\"".basename($att_location)."\"\r\n\r\n";
+                    $headers .= $content."\r\n\r\n";
 
-            //preparing attachments
-            foreach ($attach as $att_location){
-                // read file into $data var
-                $headers .= "--".$boundary."\r\n";//boundary for separating multiple attachments
-                $file = fopen($att_location, "rb");
-                $data = fread($file,  filesize( $att_location ) );
-                fclose($file);
-                $content = chunk_split(base64_encode($data));
-                $headers .= "Content-Type: application/octet-stream; name=\"".basename($att_location)."\"\r\n";
-                $headers .= "Content-Transfer-Encoding: base64\r\n";
-                $headers .= "Content-Disposition: attachment; filename=\"".basename($att_location)."\"\r\n\r\n";
-                $headers .= $content."\r\n\r\n";
-
+                }
             }
 
 
@@ -228,9 +230,11 @@ class Mail extends Mailer{
             // send mail
             $send =  mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
             if($send){
-                /*deleting attachments*/ 
-                $this->DeleteAttach($attach);
-                return $send;
+                if(isset($attach)){
+                    /*deleting attachments*/ 
+                    $this->DeleteAttach($attach);
+                    return $send;
+                }
                 
             }
             else{
@@ -249,7 +253,7 @@ class Mail extends Mailer{
             $send->setSubject($subject);
             $send->setHtmlBody($message_body);
             $j=0;
-            if($attach){
+            if(isset($attach)){
                 foreach ($attach as $val){
                     $send->attach($attach[$j]);
                     $j++;
@@ -258,9 +262,11 @@ class Mail extends Mailer{
             $send->send();
             
             if($send){
-                /*deleting attachments*/ 
-                $this->DeleteAttach($attach);
-                return true;
+                if(isset($attach)){
+                    /*deleting attachments*/ 
+                    $this->DeleteAttach($attach);
+                    return true;
+                }
                 
             }
             else{
