@@ -233,9 +233,8 @@ class Mail extends Mailer{
                 if(isset($attach)){
                     /*deleting attachments*/ 
                     $this->DeleteAttach($attach);
-                    return $send;
                 }
-                
+                return $send;
             }
             else{
                 return $send;
@@ -265,9 +264,9 @@ class Mail extends Mailer{
                 if(isset($attach)){
                     /*deleting attachments*/ 
                     $this->DeleteAttach($attach);
-                    return true;
+                    
                 }
-                
+            return true;    
             }
             else{
                 return false;
