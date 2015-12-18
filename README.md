@@ -110,8 +110,9 @@ public function actionCreate()
                 // only after the six setting for and running Yii::$app->email->configSet();
 
                if (Yii::$app->email->SendMail($from,$to,$subject,$message_body,$cc,$bcc,$attachment)){
+			   
 					//deleting the attachment
-					Yii::$app->email->DeleteAttach($mail_store->attachments);
+					Yii::$app->email->DeleteAttach($attachments);
                     Yii::$app->session->setFlash('success','Email sent.'); //for for wrong event.
                     return $this->redirect(['create']);
                 }
@@ -134,10 +135,3 @@ public function actionCreate()
         }
 
     }
-```
-Important Note:
----------------
-```
-It is important that you must make a directory of name of "emailAttach" to the path location of this "Yii::$app->basePath.'/web"
-
-```
