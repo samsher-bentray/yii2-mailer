@@ -4,6 +4,7 @@ use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\swiftmailer\Mailer;
+use yii\helpers\BaseFileHelper;
 
 
 /**
@@ -269,15 +270,12 @@ class Mail extends Mailer{
     public function SaveAttach($actualFile){
         /*Initializing empty array for store atttachment file location with attachment name*/
         $attach=[];
-        $attLocation = Yii::$app->basePath.'/web/EmailAttach/';
-        if(!file_exists($attLocation)){
-            mkdir($attLocation);
-        } 
-        
+        $attLocation = Yii::$app->basePath.'/web/EmailAttach';
+        BaseFileHelper::createDirectory($attLocation);
         $loc_count=0;
         foreach ($actualFile as $file)
             {
-                $attLocation = $attLocation.rand().$file->name;
+                $attLocation = $attLocation.'/'.rand().$file->name;
                 $file->saveAs($attLocation);
                 $attach []= $attLocation;
                 $loc_count++;
