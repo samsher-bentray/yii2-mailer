@@ -176,16 +176,12 @@ class Mail extends Mailer{
            
                 if($actualFile)
                 {
-                    $attach_in_str = $this->SaveAttach($actualFile);
-                    $attach = explode(',', $attach_in_str);
+                    
+                    $attach = $actualFile;
 
                 }
         }
-        elseif ($actualFile!=NULL) {
-            
-               $attach = explode(',', $actualFile);
-              
-        }
+        
         if($this->_Mail_Type=="PHPMAIL")
         {
             //creating boundary with unique id
@@ -228,18 +224,8 @@ class Mail extends Mailer{
             $headers .= "--".$boundary."--";//boundary closing 
 
             // send mail
-            $send =  mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
-            if($send){
-                if(isset($attach)){
-                    /*deleting attachments*/ 
-                    $this->DeleteAttach($attach);
-                }
-                return $send;
-            }
-            else{
-                return $send;
-                
-            }
+            return mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
+            
         
         }
         else //If $this->_Mail_Type=="SMTP" or other type, use SMTP settings
@@ -261,17 +247,10 @@ class Mail extends Mailer{
             $send->send();
             
             if($send){
-                if(isset($attach)){
-                    /*deleting attachments*/ 
-                    $this->DeleteAttach($attach);
-                    
-                }
+            
             return true;    
             }
-            else{
-                return false;
-                
-            }
+            
         }
            
         
@@ -280,7 +259,7 @@ class Mail extends Mailer{
     }
     
     /**
-     * Returns a string which is a comma separated value of location of attachment files.
+     * Returns a array of location of attachment files.
      * <li></li>
      * <li><b>Syntax:</b></li>
      * <li>SaveAttach($actualFile)</li>
@@ -317,6 +296,9 @@ class Mail extends Mailer{
            
             foreach ($attach as $file)
             {
+                if(isset($file)){
+                    
+                }
                 
                 @unlink($file);
             }
