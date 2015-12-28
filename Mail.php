@@ -110,7 +110,7 @@ class Mail extends Mailer{
      * Function for setting of port number.
      * <li><b>Default setting:</b> NULL value.</li>
      */
-    public function setSMTPPort($port_num)
+    public function setServerPort($port_num)
     {
        
         $this->port_num=$port_num;
@@ -185,73 +185,12 @@ class Mail extends Mailer{
         
         if($this->_Mail_Type=="PHPMAIL")
         {
-            //creating boundary with unique id
-            $boundary = md5(uniqid(time()));
-
-            //Building the headers for attachment and html
-            $headers = "From: $from\r\n";
-            $headers .= "To: $to\r\n";
-            $headers .= "Reply-To: $from\r\n";
-            $headers .= "Return-Path: $from\r\n";
-            $headers .= "CC: $cc\r\n";
-            $headers .= "BCC: $bcc\r\n"; 
-
-            $headers .= "MIME-Version: 1.0\r\n";
-            $headers .= "Content-Type: multipart/mixed; boundary=\"".$boundary."\"\r\n\r\n";
-            $headers .= "--".$boundary."\r\n";
-            $headers .= "Content-type:text/html; charset=iso-8859-1\r\n";
-            $headers .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-            $headers .= $message_body."\r\n\r\n";
-            
-            if(isset($attach)){
-                //preparing attachments
-                foreach ($attach as $att_location){
-                    // read file into $data var
-                    $headers .= "--".$boundary."\r\n";//boundary for separating multiple attachments
-                    $file = fopen($att_location, "rb");
-                    $data = fread($file,  filesize( $att_location ) );
-                    fclose($file);
-                    $content = chunk_split(base64_encode($data));
-                    $headers .= "Content-Type: application/octet-stream; name=\"".basename($att_location)."\"\r\n";
-                    $headers .= "Content-Transfer-Encoding: base64\r\n";
-                    $headers .= "Content-Disposition: attachment; filename=\"".basename($att_location)."\"\r\n\r\n";
-                    $headers .= $content."\r\n\r\n";
-
-                }
-            }
-
-
-            $headers .= "X-Mailer: PHP". phpversion() ."\r\n";
-            $headers .= "--".$boundary."--";//boundary closing 
-
-            // send mail
-            return mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
-            
-        
+            return $this->mail_send_in_php($from, $to,$subject,$message_body,$cc,$bcc,$attach);
         }
         else //If $this->_Mail_Type=="SMTP" or other type, use SMTP settings
         {
-            $send = $this->compose();
-            $send->setFrom($from);
-            $send->setTo($to==NULL?Null:explode(',', $to));
-            $send->setCc($cc==NULL?Null:explode(',', $cc));
-            $send->setBcc($bcc==NULL?Null:explode(',', $bcc));
-            $send->setSubject($subject);
-            $send->setHtmlBody($message_body);
-            $j=0;
-            if(isset($attach)){
-                foreach ($attach as $val){
-                    $send->attach($attach[$j]);
-                    $j++;
-                }
-            }  
-            $send->send();
             
-            if($send){
-            
-            return true;    
-            }
-            
+            return $this->mail_send_using_server($from, $to, $subject, $message_body, $cc, $bcc, $attach);
         }
            
         
@@ -306,6 +245,74 @@ class Mail extends Mailer{
             }
         }
         return TRUE;
+    }
+    Private function mail_send_in_php($from, $to,$subject,$message_body,$cc,$bcc,$attach){
+        
+            //creating boundary with unique id
+            $boundary = md5(uniqid(time()));
+
+            //Building the headers for attachment and html
+            $headers = "From: $from\r\n";
+            $headers .= "To: $to\r\n";
+            $headers .= "Reply-To: $from\r\n";
+            $headers .= "Return-Path: $from\r\n";
+            $headers .= "CC: $cc\r\n";
+            $headers .= "BCC: $bcc\r\n"; 
+
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: multipart/mixed; boundary=\"".$boundary."\"\r\n\r\n";
+            $headers .= "--".$boundary."\r\n";
+            $headers .= "Content-type:text/html; charset=iso-8859-1\r\n";
+            $headers .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+            $headers .= $message_body."\r\n\r\n";
+            
+            if(isset($attach)){
+                //preparing attachments
+                foreach ($attach as $att_location){
+                    // read file into $data var
+                    $headers .= "--".$boundary."\r\n";//boundary for separating multiple attachments
+                    $file = fopen($att_location, "rb");
+                    $data = fread($file,  filesize( $att_location ) );
+                    fclose($file);
+                    $content = chunk_split(base64_encode($data));
+                    $headers .= "Content-Type: application/octet-stream; name=\"".basename($att_location)."\"\r\n";
+                    $headers .= "Content-Transfer-Encoding: base64\r\n";
+                    $headers .= "Content-Disposition: attachment; filename=\"".basename($att_location)."\"\r\n\r\n";
+                    $headers .= $content."\r\n\r\n";
+
+                }
+            }
+
+
+            $headers .= "X-Mailer: PHP". phpversion() ."\r\n";
+            $headers .= "--".$boundary."--";//boundary closing 
+
+            // send mail
+            return mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
+            
+        
+    }
+    private function mail_send_using_server($from, $to,$subject,$message_body,$cc,$bcc,$attach){
+            $send = $this->compose();
+            $send->setFrom($from);
+            $send->setTo($to==NULL?Null:explode(',', $to));
+            $send->setCc($cc==NULL?Null:explode(',', $cc));
+            $send->setBcc($bcc==NULL?Null:explode(',', $bcc));
+            $send->setSubject($subject);
+            $send->setHtmlBody($message_body);
+            $j=0;
+            if(isset($attach)){
+                foreach ($attach as $val){
+                    $send->attach($attach[$j]);
+                    $j++;
+                }
+            }  
+            $send->send();
+            
+            if($send){
+            
+            return true;    
+            }
     }
   
 }
