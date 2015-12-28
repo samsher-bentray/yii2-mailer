@@ -56,6 +56,21 @@ class Mail extends Mailer{
      */
     public $attachments=NULL;
     
+    /**
+     * @var string the SMTP server address.
+     */
+    public $__from=NULL;
+    
+    /**
+     * @var string the SMTP server address.
+     */
+    public $__reply_to=NULL;
+    
+    /**
+     * @var string the SMTP server address.
+     */
+    public $__return_path=NULL;
+    
 
 
     /**
@@ -153,6 +168,36 @@ class Mail extends Mailer{
        $this->encType=$encType;
         $this->configSet();
     }
+    /**
+     * Function for setting of "From" for php mail.
+     * <li><b>Default setting:</b> NULL value.</li>
+     */
+    public function setFrom($from)
+    {
+       
+        $this->__from=$from;
+                
+    }
+    /**
+     * Function for setting of "Reply To" for php mail.
+     * <li><b>Default setting:</b> NULL value.</li>
+     */
+    public function setReplyTo($reply_to)
+    {
+       
+        $this->__reply_to=$reply_to;
+                
+    }
+    /**
+     * Function for setting of "Return Path" for php mail.
+     * <li><b>Default setting:</b> NULL value.</li>
+     */
+    public function setReturnPath($return_path)
+    {
+       
+        $this->__return_path=$return_path;
+                
+    }
     
 
    
@@ -171,26 +216,17 @@ class Mail extends Mailer{
      */ 
     public function SendMail($from, $to,$subject,$message_body,$cc=null,$bcc=null,$actualFile=null)
     {
-        
-       
-        if(is_array ($actualFile )){
-           
-                if($actualFile)
-                {
-                    
-                    $attach = $actualFile;
-
-                }
-        }
+ 
         
         if($this->_Mail_Type=="PHPMAIL")
         {
-            return $this->mail_send_in_php($from, $to,$subject,$message_body,$cc,$bcc,$attach);
+            
+            return $this->mail_send_in_php($from, $to,$subject,$message_body,$cc,$bcc,$actualFile);
         }
         else //If $this->_Mail_Type=="SMTP" or other type, use SMTP settings
         {
             
-            return $this->mail_send_using_server($from, $to, $subject, $message_body, $cc, $bcc, $attach);
+            return $this->mail_send_using_server($from, $to, $subject, $message_body, $cc, $bcc, $actualFile);
         }
            
         
@@ -250,12 +286,13 @@ class Mail extends Mailer{
         
             //creating boundary with unique id
             $boundary = md5(uniqid(time()));
+            
 
             //Building the headers for attachment and html
-            $headers = "From: $from\r\n";
+            $headers = "From:".$this->__from?$this->__from:$from."\r\n";
             $headers .= "To: $to\r\n";
-            $headers .= "Reply-To: $from\r\n";
-            $headers .= "Return-Path: $from\r\n";
+            $headers .= "Reply-To:".$this->__reply_to?$this->__reply_to:$from."\r\n";
+            $headers .= "Return-Path:".$this->__return_path?$this->__return_path:$from."\r\n";
             $headers .= "CC: $cc\r\n";
             $headers .= "BCC: $bcc\r\n"; 
 
@@ -266,7 +303,7 @@ class Mail extends Mailer{
             $headers .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
             $headers .= $message_body."\r\n\r\n";
             
-            if(isset($attach)){
+            if($attach!=NULL){
                 //preparing attachments
                 foreach ($attach as $att_location){
                     // read file into $data var
@@ -294,19 +331,20 @@ class Mail extends Mailer{
     }
     private function mail_send_using_server($from, $to,$subject,$message_body,$cc,$bcc,$attach){
             $send = $this->compose();
-            $send->setFrom($from);
+            $send->setFrom($this->__from?$this->__from:$from);
             $send->setTo($to==NULL?Null:explode(',', $to));
             $send->setCc($cc==NULL?Null:explode(',', $cc));
             $send->setBcc($bcc==NULL?Null:explode(',', $bcc));
             $send->setSubject($subject);
             $send->setHtmlBody($message_body);
             $j=0;
-            if(isset($attach)){
+            if($attach!=NULL){
                 foreach ($attach as $val){
                     $send->attach($attach[$j]);
                     $j++;
                 }
             }  
+            
             $send->send();
             
             if($send){
