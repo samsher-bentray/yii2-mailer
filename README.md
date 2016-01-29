@@ -58,32 +58,38 @@ public function actionCreate()
         if ($model->load(Yii::$app->request->post())) {
             
                 /*Starting configuration for smtp or other type*/
-
-                Yii::$app->email->setMailType('smtp');
+            
+                Yii::$app->email->setMailType('SMTP');//aeruement is either 'SMTP' or 'PHPMAIL'
 
                 //Passing arguement for Host setting
-                Yii::$app->email->setHost('smtp.gmail.com');
+                Yii::$app->email->setHost('smtp.gmail.com');// aeruement is 'smtp.gmail.com' for gmail
 
                 //Passing arguement for Username setting
                 Yii::$app->email->setUname('some email');
 
                 //Passing arguement for Password setting
-                Yii::$app->email->setPassd('some password');
+                Yii::$app->email->setPassd('password');
 
                 //Passing arguement for Encryption Type setting
-                Yii::$app->email->setEncType('ssl');
+                Yii::$app->email->setEncType('ssl');//encryption type must either be 'ssl' or 'tls'
 
                 
                 //Passing arguement for Port setting
-                Yii::$app->email->setSMTPPort('465');
+                Yii::$app->email->setServerPort('465'); port of gmail server is '465' for 'SSL' and '587' for 'TLS'
 
                 /*Ending configuration for smtp or other type*/
+                Yii::$app->email->configSet();//note that email setting is completed only after executing this function
+                
+                /*Starting configuration for php mail*/
+                
+                //Passing arguement to set from
+                Yii::$app->email->setFrom('some email');
 
-                 
-                Yii::$app->email->configSet();//note that email setting is completed only when execute this function
+                //Passing arguement to set Reply To
+                Yii::$app->email->setReplyTo('some email');
 
-
-                $from = 'some email';
+                //Passing arguement to set Return Path
+                Yii::$app->email->setReturnPath('some email');
 
                 $to = $model->to;
 
