@@ -71,6 +71,11 @@ class Mail extends Mailer{
      */
     public $__return_path=NULL;
     
+    /**
+     * @var string the mail encoding bit.
+     */
+    public $__encoding_bit='7bit';
+    
 
 
     /**
@@ -198,6 +203,16 @@ class Mail extends Mailer{
         $this->__return_path=$return_path;
                 
     }
+    /**
+     * Function for setting of "Return Path" for php mail.
+     * <li><b>Default setting:</b> NULL value.</li>
+     */
+    public function setEncodeBit($encode_bit)
+    {
+       
+        $this->__encoding_bit=$encode_bit;
+                
+    }
     
 
    
@@ -297,7 +312,7 @@ class Mail extends Mailer{
             $headers .= "Content-Type: multipart/mixed; boundary=\"".$boundary."\"\r\n\r\n";
             $headers .= "--".$boundary."\r\n";
             $headers .= "Content-type:text/html; charset=iso-8859-1\r\n";
-            $headers .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+            $headers .= "Content-Transfer-Encoding: .".$this->__encoding_bit."\r\n\r\n";
             $headers .= $message_body."\r\n\r\n";
             
             if($attach!=NULL){
