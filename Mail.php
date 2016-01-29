@@ -220,8 +220,7 @@ class Mail extends Mailer{
         
         if($this->_Mail_Type=="PHPMAIL")
         {
-            
-            return $this->mail_send_in_php($from, $to,$subject,$message_body,$cc,$bcc,$actualFile);
+	     return $this->mail_send_in_php($from, $to,$subject,$message_body,$cc,$bcc,$actualFile);
         }
         else //If $this->_Mail_Type=="SMTP" or other type, use SMTP settings
         {
@@ -287,10 +286,8 @@ class Mail extends Mailer{
             //creating boundary with unique id
             $boundary = md5(uniqid(time()));
             
-
             //Building the headers for attachment and html
             $headers = "From:".$this->__from?$this->__from:$from."\r\n";
-            $headers .= "To: $to\r\n";
             $headers .= "Reply-To:".$this->__reply_to?$this->__reply_to:$from."\r\n";
             $headers .= "Return-Path:".$this->__return_path?$this->__return_path:$from."\r\n";
             $headers .= "CC: $cc\r\n";
@@ -325,10 +322,9 @@ class Mail extends Mailer{
             $headers .= "--".$boundary."--";//boundary closing 
 
             // send mail
-            return mail( NULL, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
-            
-        
+            return mail($to, $subject,NULL, str_replace("\r\n","\n",$headers) ) ;
     }
+    
     private function mail_send_using_server($from, $to,$subject,$message_body,$cc,$bcc,$attach){
             $send = $this->compose();
             $send->setFrom($this->__from?$this->__from:$from);
